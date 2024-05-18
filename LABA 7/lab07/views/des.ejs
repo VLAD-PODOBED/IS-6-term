@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>LABA7</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<main>
+    <h5 class="text-center mt-4">Шифрование</h5>
+    <div class="container w-50">
+            <form class="w-full" id="enc_form">
+                <div class="form-group">
+                    <label for="enc_text">Введите сообщение</label>
+                    <input type="text" name="enc_text" class="form-control" required id="enc_text">
+                </div>
+                <button type="submit" class="btn btn-primary">Результат</button>
+            </form>
+            <p id="encResult" class="mt-4"></p>
+    </div>
+    <h5 class="text-center mt-4">Расшифрование</h5>
+    <div class="container w-50">
+        <form class="w-full" id="dec_form">
+            <div class="form-group">
+                <label for="dec_text">Введите сообщение</label>
+                <input type="text" name="dec_text" class="form-control" required id="dec_text">
+            </div>
+            <button type="submit" class="btn btn-primary">Результат</button>
+        </form>
+        <p id="decResult" class="mt-4"></p>
+    </div>
+</main>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.w-50 {
+    width: 50%;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+}
+
+.btn {
+        display: inline-block;
+        background-color: #28a745; /* зелёный цвет */
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #218838; /* тёмный зелёный цвет при наведении */
+    }
+
+#encResult,
+#decResult {
+    margin-top: 1rem;
+}
+
+</style>
+<script type="text/javascript">
+    let form = document.getElementById('enc_form');
+    let formDec = document.getElementById('dec_form');
+
+    // form.onsubmit = async (event) => {
+    //     event.preventDefault();
+
+    //     const formData = new FormData(form);
+    //     let jsonRequestData = {};
+
+    //     for (let [key, value] of formData) {
+    //         jsonRequestData[key] = value;
+    //     }
+
+    //     fetch('/encrypt', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(jsonRequestData)
+    //     }).then(async (res) => {
+    //         let paragraph = document.getElementById('encResult');
+    //         if (res.status === 200) {
+    //             let result = await res.json();
+    //             paragraph.innerHTML = `${result.result} (${result.encodingTime} мс)`;
+    //         } else {
+    //             paragraph.innerHTML = "Произошла ошибка"
+    //         }
+    //     })
+    // }
+
+    form.onsubmit = async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        let jsonRequestData = {};
+
+        for (let [key, value] of formData) {
+            jsonRequestData[key] = value;
+        }
+
+        fetch('/encrypt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonRequestData)
+        }).then(async (res) => {
+            let paragraph = document.getElementById('encResult');
+            if (res.status === 200) {
+                let result = await res.json();
+                paragraph.innerHTML = `${result.result} (${result.encodingTime} мс)
+                <br/>Эффект лавины: ${result.avalanche} %`;
+            } else {
+                paragraph.innerHTML = "Произошла ошибка"
+            }
+        })
+    }
+
+    formDec.onsubmit = async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(formDec);
+        let jsonRequestData = {};
+
+        for (let [key, value] of formData) {
+            jsonRequestData[key] = value;
+        }
+
+        fetch('/decrypt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonRequestData)
+        }).then(async (res) => {
+            let paragraph = document.getElementById('decResult');
+            if (res.status === 200) {
+                let result = await res.json();
+                paragraph.innerHTML = `${result.result} (${result.decodingTime} мс)`;
+            } else {
+                paragraph.innerHTML = "Произошла ошибка"
+            }
+        })
+    }
+</script>
+</body>
+</html>
